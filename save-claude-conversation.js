@@ -43,7 +43,7 @@
         let blob = new Blob([fullContent], {type: 'text/plain'});
         let a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = 'claude_conversation_with_inline_artifacts.md';
+        a.download = 'claude_conversation.md';
         a.click();
     });
 })();
