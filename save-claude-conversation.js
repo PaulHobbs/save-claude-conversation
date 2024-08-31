@@ -43,7 +43,9 @@
         let blob = new Blob([fullContent], {type: 'text/plain'});
         let a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = 'claude_conversation.md';
+        a.download = document.querySelector('button[data-testid="chat-menu-trigger"]').textContent+ '.md'; 
         a.click();
     });
 })();
+
+
