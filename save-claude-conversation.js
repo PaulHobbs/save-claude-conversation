@@ -1,5 +1,5 @@
 (function() {
-    // Function to get content of an artifact
+    // Get content of an artifact by clicking a button
     async function getArtifactContent(button) {
         button.click();
         await new Promise(r => setTimeout(r, 100)); // Wait 0.1s for content to load
@@ -9,61 +9,45 @@
         return content;
     }
 
-    // Function to process a message and its artifacts
+    // Process a message and its artifacts
     async function processMessage(message) {
         let isUser = message.classList.contains('font-user-message');
         let prefix = isUser ? '**Human:** ' : '**Claude:** ';
 
-        // Function to process markdown elements
         function processMarkdown(element) {
             if (element.nodeType === Node.TEXT_NODE) {
                 return element.textContent;
             }
 
-            switch (element.tagName) {
-                case 'P':
-                    return toMarkdown(element) + '\n\n';
-                case 'STRONG':
-                    return `**${toMarkdown(element)}**`;
-                case 'EM':
-                    return `*${toMarkdown(element)}*`;
-                case 'CODE':
-                    return `\`${toMarkdown(element)}\``;
-                case 'PRE':
+            const markdownRules = {
+                'P': () => toMarkdown(element) + '\n\n',
+                'STRONG': () => `**${toMarkdown(element)}**`,
+                'EM': () => `*${toMarkdown(element)}*`,
+                'CODE': () => `\`${toMarkdown(element)}\``,
+                'PRE': () => {
                     let codeBlock = element.querySelector('code');
                     let language = codeBlock.className.replace('language-', '');
                     return `\`\`\`${language}\n${codeBlock.textContent}\n\`\`\`\n\n`;
-                case 'OL':
-                    return Array.from(element.children).map((li, index) => 
-                        `${index + 1}. ${toMarkdown(li)}`
-                    ).join('\n') + '\n\n';
-                case 'UL':
-                    return Array.from(element.children).map(li => 
-                        `- ${toMarkdown(li)}`
-                    ).join('\n') + '\n\n';
-                case 'BLOCKQUOTE':
-                    return `> ${toMarkdown(textContent)}\n\n`;
-                case 'A':
-                    return `[${toMarkdown(element)}](${element.href})`;
-                case 'H1':
-                    return `# ${toMarkdown(element)}\n\n`;
-                case 'H2':
-                    return `## ${toMarkdown(element)}\n\n`;
-                case 'H3':
-                    return `### ${toMarkdown(element)}\n\n`;
-                case 'DIV':
-                    return toMarkdown(element)
-		case 'OPTION':
-                    return ''
-		case 'BR':
-                    return '\n'
-                default:
-                    console.log(element);
-                    console.log(element.tagName);
-                    debug;
-                    return toMarkdown(element);
-            }
+                },
+                'OL': () => Array.from(element.children).map((li, index) => 
+                    `${index + 1}. ${toMarkdown(li)}`
+                ).join('\n') + '\n\n',
+                'UL': () => Array.from(element.children).map(li => 
+                    `- ${toMarkdown(li)}`
+                ).join('\n') + '\n\n',
+                'BLOCKQUOTE': () => `> ${toMarkdown(element)}\n\n`,
+                'A': () => `[${toMarkdown(element)}](${element.href})`,
+                'H1': () => `# ${toMarkdown(element)}\n\n`,
+                'H2': () => `## ${toMarkdown(element)}\n\n`,
+                'H3': () => `### ${toMarkdown(element)}\n\n`,
+                'DIV': () => toMarkdown(element),
+                'OPTION': () => '',
+                'BR': () => '\n'
+            };
+
+            return (markdownRules[element.tagName] || (() => toMarkdown(element)))();
         }
+
 
 	toMarkdown = (node) => Array.from(node.childNodes).map(node => processMarkdown(node)).join('');
 
@@ -78,7 +62,7 @@
         return prefix + '\n' + text.trim();
     }
 
-    // Get conversation with inlined artifacts
+    // Exports the conversation as a markdown file for download.
     async function getConversationWithArtifacts() {
         let messages = Array.from(document.querySelectorAll('.font-user-message, .font-claude-message'));
         let conversation = [];
