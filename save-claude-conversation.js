@@ -51,7 +51,7 @@
 
 	toMarkdown = (node) => Array.from(node.childNodes).map(node => processMarkdown(node)).join('');
 
-	const text = toMarkdown(message);
+	var text = toMarkdown(message);
         // Find and replace "Click to open text" with actual artifact content
         const artifactButtons = Array.from(message.querySelectorAll('button[aria-label="Preview contents"]'));
         for (let button of artifactButtons) {
@@ -78,7 +78,10 @@
         let a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
 	const formattedDate = (new Date()).toISOString().split('T')[0];
-        const title = document.querySelector('button[data-testid="chat-menu-trigger"]').textContent;
+        const title = (
+          document.querySelector('button[data-testid="chat-menu-trigger"]') ||
+          document.querySelector('button[testid="chat-menu-trigger"]')
+        ).textContent;
         a.download = formattedDate + '_' + title + '.md'; 
         a.click();
     });
