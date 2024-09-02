@@ -49,9 +49,9 @@
         }
 
 
-	toMarkdown = (node) => Array.from(node.childNodes).map(node => processMarkdown(node)).join('');
+	let toMarkdown = (node) => Array.from(node.childNodes).map(node => processMarkdown(node)).join('');
 
-	var text = toMarkdown(message);
+	let text = toMarkdown(message);
         // Find and replace "Click to open text" with actual artifact content
         const artifactButtons = Array.from(message.querySelectorAll('button[aria-label="Preview contents"]'));
         for (let button of artifactButtons) {
