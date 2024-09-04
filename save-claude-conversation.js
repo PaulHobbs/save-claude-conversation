@@ -1,3 +1,10 @@
+// *****************************************************************************
+// NOTE:
+// THIS IS THE SOURCE FOR bookmarklet.txt
+// IT WILL NOT WORK AS A BOOKMARKLET DUE TO COMMENTS
+// USE bookmarklet.txt INSTEAD
+// *****************************************************************************
+
 (function() {
     // Get content of an artifact by clicking a button
     async function getArtifactContent(button) {
